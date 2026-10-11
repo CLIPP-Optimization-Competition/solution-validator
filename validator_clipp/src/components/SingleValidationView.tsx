@@ -24,6 +24,7 @@ const SingleValidationView: React.FC = () => {
   const [submissionText, setSubmissionText] = useState<string>("");
   const [result, setResult] = useState<ValidationResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [runtimeError, setRuntimeError] = useState<string | null>(null);
 
   const handleInstanceSelect = useCallback(async (file: File) => {
     setInstanceFile(file);
@@ -38,15 +39,20 @@ const SingleValidationView: React.FC = () => {
   const handleValidate = async () => {
     if (!instanceText || !submissionText) return;
     setLoading(true);
+    setRuntimeError(null);
+    setResult(null);
     try {
       const res = await runValidator(instanceText, submissionText);
       setResult(res);
+    } catch (error) {
+      setRuntimeError(error instanceof Error ? error.message : "Unexpected validator runtime failure.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleMock = (key: MockKey) => {
+    setRuntimeError(null);
     setResult(mockResponses[key]);
   };
 
@@ -65,6 +71,11 @@ const SingleValidationView: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {runtimeError && (
+        <div role="alert" className="rounded-lg border border-destructive p-4 text-destructive">
+          {runtimeError}
+        </div>
+      )}
       <section>
         <div className="grid gap-4 sm:grid-cols-2">
           <FileUploadCard

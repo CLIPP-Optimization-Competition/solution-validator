@@ -13,7 +13,11 @@ em++ -std=c++17 \
   -s WASM=1 \
   -s MODULARIZE=1 \
   -s EXPORT_ES6=1 \
-  -s EXPORTED_FUNCTIONS='["_validate"]' \
-  -s EXPORTED_RUNTIME_METHODS='["ccall"]' \
+  -s STACK_SIZE=16777216 \
+  -s INITIAL_MEMORY=268435456 \
+  -s MAXIMUM_MEMORY=1073741824 \
+  -s ALLOW_MEMORY_GROWTH=1 \
+  -s EXPORTED_FUNCTIONS='["_validate","_malloc","_free"]' \
+  -s EXPORTED_RUNTIME_METHODS='["ccall","lengthBytesUTF8","stringToUTF8"]' \
   -O2 \
   -o ../validator_clipp/public/wasm/validator.js
